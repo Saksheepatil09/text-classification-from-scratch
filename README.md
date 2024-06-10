@@ -1,3 +1,3 @@
-# text-classification-using-deep-learning
+# Text-classification-from-scratch
 
 Sakshi Patil

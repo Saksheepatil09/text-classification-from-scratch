@@ -24,24 +24,24 @@ The IEMOCAP dataset is particularly rich in emotional annotations, making it an 
 # Instructions
 
 ## 1.Import Libraries 
-bash
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-import seaborn as sns
 from tensorflow.keras.layers import TextVectorization, Embedding, Conv1D, GlobalMaxPooling1D, Dense, Dropout
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.metrics import precision_recall_fscore_support
+
 
 
 # 2.Extraction
 
-bash
+
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z0-9\s]", '', text)
@@ -69,40 +69,35 @@ df.to_csv(csv_file_path, index=False)
 
 
 # 3.Labelling
-bash
-file_path = r"C:\Users\Satyam Sangar\Downloads\cleaned.csv"
+
+file_path = r"C:\Users\SAKSHEE\Downloads\cleaned.csv"
 data = pd.read_csv(file_path)
 
 happy_keywords = ["good","know","im","love","like","mean","fine","happy","going","get","excited","thats","okay","youre","theyre","right","yeah","spot","thing","hey"]
 sad_keywords = ['sad', 'unhappy', 'miserable','hate','oh','help', 'sorrow', 'upset', 'depressed', 'downcast', 'gloomy','dont','cant']
 
 def label_text(text):
-    if isinstance(text, str):
-        text_lower = text.lower()
-        happy_count = sum(keyword in text_lower for keyword in happy_keywords)
-        sad_count = sum(keyword in text_lower for keyword in sad_keywords)
-        
-        if happy_count > sad_count:
-            return 'happy'
-        elif sad_count > happy_count:
-            return 'sad'
-        else:
-            return 'neutral'
-        else:
-        return 'neutral'  
+    text_lower = text.lower()
+    happy_count = sum(keyword in text_lower for keyword in happy_keywords)
+    sad_count = sum(keyword in text_lower for keyword in sad_keywords)
+    
+    if happy_count > sad_count:
+        return 'happy'
+    elif sad_count > happy_count:
+        return 'sad'
+    else:
+        return 'neutral'
 
 data['label'] = data['text'].apply(label_text)
 
-output_file_path = r"C:\Users\Satyam Sangar\Downloads\relabelled_data5.csv"
+output_file_path = r"C:\Users\SAKSHEE\Downloads\relabelled_data5.csv"
 data.to_csv(output_file_path, index=False)
 
 label_distribution = data['label'].value_counts()
 print(label_distribution)
 
 
-
 # 4.Preprocessing
-bash
 df = pd.read_csv(r"C:\Users\Satyam Sangar\Downloads\relabelled_data5.csv")
 
 texts = df['text'].astype(str).tolist()
@@ -122,7 +117,6 @@ texts_train, texts_val, labels_train, labels_val = train_test_split(texts_train,
 
 
 # 5.Vectorization
-bash
 max_features = 10000  
 sequence_length = 50  
 
@@ -148,7 +142,6 @@ model = Sequential([
 
 
 # 6.Training
-bash
 optimizer = Adam(learning_rate=0.001)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -162,7 +155,6 @@ print(f"Test Loss: {test_results[0]}, Test Accuracy: {test_results[1]}")
 
 
 # 7.Evaluation
-bash
 y_true = np.argmax(labels_test, axis=1)
 y_pred = np.argmax(model.predict(tf.constant(texts_test, dtype=tf.string)), axis=1)
 
@@ -172,14 +164,14 @@ print(cm)
 
 
 # 8.Metrics
-bash
+
 report = classification_report(y_true, y_pred, target_names=index_to_emotion.values())
 print("Classification Report:")
 print(report)
 
 
 # 9.Inference
-bash
+
 new_texts = [
     "I'm excited about starting my new job!",  
     "Oh, so sad", 
@@ -197,7 +189,7 @@ for text, emotion in zip(new_texts, predicted_emotions):
 
 
 # 10.ROC Curve Visualization
-bash
+
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
 
@@ -217,7 +209,7 @@ plt.show()
 
 
 # 11.Class-wise Precision, Recall, and F1-Score
-bash
+
 from sklearn.metrics import precision_recall_fscore_support
 
 precision, recall, f1_score, _ = precision_recall_fscore_support(y_true, y_pred, average=None)
@@ -239,7 +231,7 @@ plt.show()
 
 
 # 12.Misclassification Proportion
-bash
+
 misclassifications = y_true != y_pred
 misclassifications_count = sum(misclassifications)
 
@@ -253,7 +245,7 @@ plt.show()
 
 
 # 13.Training and Validation Metrics
-bash
+
 plt.plot(history.history['accuracy'], label='train accuracy')
 plt.plot(history.history['val_accuracy'], label = 'validation accuracy')
 plt.xlabel('Epoch')
@@ -270,7 +262,7 @@ plt.legend(loc='upper right')
 plt.show()
 
 # 14.Confusion Matrix Heatmap
-bash
+
 cm = confusion_matrix(y_true, y_pred)
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=index_to_emotion.values(), yticklabels=index_to_emotion.values())
 plt.xlabel('Predicted')
@@ -279,7 +271,7 @@ plt.show()
 
 
 # 15.Model AUC Comparison
-bash
+
 
 y_true_bin = np.array(labels_test)
 
